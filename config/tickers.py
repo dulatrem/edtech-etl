@@ -1,0 +1,1 @@
+TICKERS = ["CHGG", "COUR", "DUOL", "NRDY", "DCBO"]
