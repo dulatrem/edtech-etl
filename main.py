@@ -1,4 +1,5 @@
 from config.tickers import TICKERS
+from src.dashboard import build_dashboard
 from src.extract import fetch_prices
 from src.load import save_data
 from src.transform import add_metrics, reshape_to_long, summarize_by_ticker
@@ -17,6 +18,8 @@ def run_pipeline():
 
     summary_data = summarize_by_ticker(transformed_data)
     save_data(summary_data, "gold")
+
+    build_dashboard(summary_data)
 
 
 if __name__ == "__main__":
