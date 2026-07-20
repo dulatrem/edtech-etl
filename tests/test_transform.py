@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from src.transform import add_metrics, reshape_to_long
+from src.transform import add_metrics, reshape_to_long, summarize_by_ticker
 
 
 def test_reshape_produces_long_format():
@@ -39,3 +39,29 @@ def test_daily_return_per_ticker():
     assert result["daily_return"].iloc[3] == pytest.approx(0.10)
     assert pd.isna(result["daily_return"].iloc[0])
     assert pd.isna(result["daily_return"].iloc[2])
+
+
+def test_one_row_per_ticker():
+    """Check that summarize_by_ticker returns exactly one row per ticker."""
+    df = pd.DataFrame({
+        "Ticker": ["DUOL", "DUOL", "CHGG", "CHGG"],
+        "Close": [100, 110, 50, 55],
+        "daily_return": [0.10, 0.20, 0.30, 0.40],
+        "volatility_7d": [0.01, 0.02, 0.03, 0.04],
+    })
+    result = summarize_by_ticker(df)
+    assert len(result) == 2
+
+
+def test_summary_values_per_ticker():
+    """Check that summarize_by_ticker computes the latest and average values correctly per ticker."""
+    df = pd.DataFrame({
+        "Ticker": ["DUOL", "DUOL", "CHGG", "CHGG"],
+        "Close": [100, 110, 50, 55],
+        "daily_return": [0.10, 0.20, 0.30, 0.40],
+        "volatility_7d": [0.01, 0.02, 0.03, 0.04],
+    })
+    result = summarize_by_ticker(df)
+    duol_row = result[result["Ticker"] == "DUOL"].iloc[0]
+    assert duol_row["latest_close"] == 110
+    assert duol_row["avg_return_period"] == pytest.approx(0.15)

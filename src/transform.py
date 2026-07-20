@@ -37,3 +37,23 @@ def add_metrics(df: pd.DataFrame) -> pd.DataFrame:
         lambda daily_return: daily_return.rolling(window=7).std()
     )
     return result
+
+
+def summarize_by_ticker(df: pd.DataFrame) -> pd.DataFrame:
+    """Summarize long-format metric data into one row per ticker.
+
+    Args:
+        df: Long-format DataFrame with metrics, as returned by add_metrics.
+
+    Returns:
+        A DataFrame with one row per ticker and columns: latest_close (the
+        last Close value), latest_return (the last daily_return value),
+        latest_volatility (the last volatility_7d value), and
+        avg_return_period (the mean daily_return across the whole period).
+    """
+    return df.groupby("Ticker").agg(
+        latest_close=("Close", "last"),
+        latest_return=("daily_return", "last"),
+        latest_volatility=("volatility_7d", "last"),
+        avg_return_period=("daily_return", "mean"),
+    ).reset_index()
