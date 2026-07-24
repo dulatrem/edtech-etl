@@ -4,4 +4,7 @@ __pycache__/
 .env
 data/
 output/
+trust-policy.json
+out.json
+response.json
 dashboard.html
